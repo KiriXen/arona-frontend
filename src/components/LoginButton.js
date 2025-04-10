@@ -17,7 +17,7 @@ function LoginButton() {
   }, []);
 
   if (isAuthenticated) {
-    window.location.href = 'http://localhost:3000/dashboard';
+    window.location.href = 'https://aron4.vercel.app/dashboard';
     return null;
   }
 
