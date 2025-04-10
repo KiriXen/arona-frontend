@@ -1,0 +1,66 @@
+.stars-container {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: -1;
+  }
+  
+  .star {
+    position: absolute;
+    background: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+    opacity: 0;
+    animation: twinkle-fall linear infinite;
+  }
+  
+  @keyframes twinkle-fall {
+    0% {
+      transform: translateY(-10vh) scale(0.5);
+      opacity: 0;
+    }
+    20% {
+      opacity: 1;
+    }
+    80% {
+      opacity: 0.7;
+    }
+    100% {
+      transform: translateY(100vh) scale(0.3);
+      opacity: 0;
+    }
+  }
+  
+  html, body {
+    background-color: #0f172a !important;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    overscroll-behavior: none;
+  }
+  
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    z-index: -2;
+  }
+  
+  /* Ensure app container doesn't block stars */
+  #root {
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* Ensure main content doesn't hide stars */
+  .min-h-screen.bg-gray-900 {
+    background-color: transparent !important;
+  }

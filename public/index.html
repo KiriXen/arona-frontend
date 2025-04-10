@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Discord Bot Dashboard</title>
+    <style>
+      html {
+        height: 100%;
+        background: #0f172a;
+        overflow-x: hidden;
+      }
+      
+      body {
+        min-height: 100%;
+        margin: 0;
+        padding: 0;
+        font-family: 'Arial', sans-serif;
+        color: #e2e8f0;
+        overflow-x: hidden;
+        user-select: none;
+        -webkit-user-drag: none;
+        background: #0f172a;
+        overscroll-behavior: none;
+      }
+      
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        z-index: -2;
+      }
+      
+      #root {
+        min-height: 100vh;
+        position: relative;
+        z-index: 1;
+      }
+      
+      [draggable="false"] {
+        -webkit-user-drag: none;
+        user-drag: none;
+      }
+      
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      
+      ::-webkit-scrollbar-track {
+        background: rgba(15, 23, 42, 0.5);
+      }
+      
+      ::-webkit-scrollbar-thumb {
+        background: rgba(59, 130, 246, 0.5);
+        border-radius: 5px;
+      }
+      
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(59, 130, 246, 0.7);
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root" draggable="false"></div>
+  </body>
+</html>
