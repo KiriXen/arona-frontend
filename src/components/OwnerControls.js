@@ -11,7 +11,7 @@ function OwnerControls({ userData }) {
   const dropdownRef = useRef(null);
 
   useEffect(() => {
-    axios.get('http://localhost:3001/api/repositories', { withCredentials: true })
+    axios.get('https://arona-backend.vercel.app/api/repositories', { withCredentials: true })
       .then(response => setRepositories(response.data))
       .catch(error => console.error('Error fetching repositories:', error));
 
@@ -27,12 +27,12 @@ function OwnerControls({ userData }) {
   const handleAdd = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:3001/api/repositories', {
+      await axios.post('https://arona-backend.vercel.app/api/repositories', {
         link,
         title,
         description
       }, { withCredentials: true });
-      const response = await axios.get('http://localhost:3001/api/repositories', { withCredentials: true });
+      const response = await axios.get('https://arona-backend.vercel.app/api/repositories', { withCredentials: true });
       setRepositories(response.data);
       setLink('');
       setTitle('');
@@ -44,10 +44,10 @@ function OwnerControls({ userData }) {
 
   const handleDelete = async (repoTitle) => {
     try {
-      await axios.delete(`http://localhost:3001/api/repositories/${encodeURIComponent(repoTitle)}`, {
+      await axios.delete(`https://arona-backend.vercel.app/api/repositories/${encodeURIComponent(repoTitle)}`, {
         withCredentials: true
       });
-      const response = await axios.get('http://localhost:3001/api/repositories', { withCredentials: true });
+      const response = await axios.get('https://arona-backend.vercel.app/api/repositories', { withCredentials: true });
       setRepositories(response.data);
     } catch (error) {
       console.error('Error deleting repository:', error);
@@ -55,7 +55,7 @@ function OwnerControls({ userData }) {
   };
 
   const handleLogout = () => {
-    axios.get('http://localhost:3001/auth/logout', { withCredentials: true })
+    axios.get('https://arona-backend.vercel.app/auth/logout', { withCredentials: true })
       .then(() => window.location.href = '/');
   };
 

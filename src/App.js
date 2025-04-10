@@ -12,18 +12,14 @@ function AuthCheck({ setIsAuthenticated, setUserData, isAuthenticated }) {
 
   useEffect(() => {
     if (isAuthenticated) {
-      console.log('AuthCheck - Skipping, already authenticated');
       return;
     }
-    console.log('AuthCheck - Running for path:', location.pathname);
     const checkAuth = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/user', { withCredentials: true });
-        console.log('AuthCheck - User authenticated:', JSON.stringify(response.data, null, 2));
+        const response = await axios.get('https://arona-backend.vercel.app/api/user', { withCredentials: true });
         setIsAuthenticated(true);
         setUserData(response.data);
       } catch (error) {
-        console.log('AuthCheck - Authentication check failed:', error.message);
         setIsAuthenticated(false);
         setUserData(null);
       }
@@ -35,16 +31,12 @@ function AuthCheck({ setIsAuthenticated, setUserData, isAuthenticated }) {
 }
 
 function OwnerRoute({ isAuthenticated, userData }) {
-  console.log('OwnerRoute - Evaluating:', { isAuthenticated, userData: JSON.stringify(userData, null, 2) });
   if (!isAuthenticated || !userData) {
-    console.log('OwnerRoute - Redirecting to /');
     return <Navigate to="/" replace />;
   }
   if (!userData.isOwner) {
-    console.log('OwnerRoute - Redirecting to /dashboard');
     return <Navigate to="/dashboard" replace />;
   }
-  console.log('OwnerRoute - Rendering OwnerControls');
   return <OwnerControls userData={userData} />;
 }
 
@@ -53,15 +45,12 @@ function App() {
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    console.log('App - Running initial auth check');
     const initialAuthCheck = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/user', { withCredentials: true });
-        console.log('App - Initial auth check succeeded:', JSON.stringify(response.data, null, 2));
+        const response = await axios.get('https://arona-backend.vercel.app/api/user', { withCredentials: true });
         setIsAuthenticated(true);
         setUserData(response.data);
       } catch (error) {
-        console.log('App - Initial auth check failed:', error.message);
         setIsAuthenticated(false);
         setUserData(null);
       }
@@ -69,7 +58,6 @@ function App() {
     initialAuthCheck();
   }, []);
 
-  console.log('App - Rendering with:', { isAuthenticated, userData: JSON.stringify(userData, null, 2) });
 
   return (
     <Router>

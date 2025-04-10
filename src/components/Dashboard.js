@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Link } from 'react-router-dom'; // Ensure this is imported
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 function Dashboard({ userData }) {
@@ -8,7 +8,7 @@ function Dashboard({ userData }) {
   const dropdownRef = useRef(null);
 
   useEffect(() => {
-    axios.get('http://localhost:3001/api/bot-stats', { withCredentials: true })
+    axios.get('https://arona-backend.vercel.app//api/bot-stats', { withCredentials: true })
       .then(response => setBotStats(response.data))
       .catch(error => console.error('Error fetching bot stats:', error));
 
@@ -22,7 +22,7 @@ function Dashboard({ userData }) {
   }, []);
 
   const handleLogout = () => {
-    axios.get('http://localhost:3001/auth/logout', { withCredentials: true })
+    axios.get('https://arona-backend.vercel.app/auth/logout', { withCredentials: true })
       .then(() => window.location.href = '/');
   };
 

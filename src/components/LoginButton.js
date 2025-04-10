@@ -7,7 +7,7 @@ function LoginButton() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        await axios.get('http://localhost:3001/api/user', { withCredentials: true });
+        await axios.get('https://arona-backend.vercel.app/api/user', { withCredentials: true });
         setIsAuthenticated(true);
       } catch (error) {
         setIsAuthenticated(false);
@@ -27,7 +27,7 @@ function LoginButton() {
         <h1 className="text-3xl font-bold text-white mb-6">Discord Bot Dashboard</h1>
         <p className="text-gray-300 mb-8">Manage your bot repositories with ease</p>
         <a
-          href="http://localhost:3001/auth/discord"
+          href="https://arona-backend.vercel.app/auth/discord"
           className="px-8 py-4 bg-indigo-600 text-white font-semibold rounded-full shadow-lg hover:bg-indigo-700 transition duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
         >
           <svg 
