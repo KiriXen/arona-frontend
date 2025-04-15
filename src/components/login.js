@@ -4,8 +4,8 @@ function LoginButton() {
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="p-8 bg-gray-800 rounded-xl shadow-xl text-center backdrop-blur">
-        <h1 className="text-3xl font-bold text-white mb-6">Discord Bot Dashboard</h1>
-        <p className="text-gray-300 mb-8">Manage your bot repositories with ease</p>
+        <h1 className="text-3xl font-bold text-white mb-6">Arona Dashboard</h1>
+        <p className="text-gray-300 mb-8">Manage Arona with ease</p>
         <a
           href={`${process.env.REACT_APP_API_URL}/auth/discord`}
           className="px-8 py-4 bg-indigo-600 text-white font-semibold rounded-full shadow-lg hover:bg-indigo-700 transition duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"

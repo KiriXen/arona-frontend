@@ -160,7 +160,7 @@ function OwnerControls({ userData }) {
   return (
     <div className="min-h-screen p-6">
       <header className="flex items-center justify-between max-w-5xl mx-auto mb-8 p-4 bg-gray-800 rounded-xl shadow-lg backdrop-blur">
-        <h1 className="text-3xl font-bold text-white">Owner Controls</h1>
+        <h1 className="text-3xl font-bold text-white">Owner</h1>
         <div className="flex items-center space-x-4 relative" ref={dropdownRef}>
           <span className="text-gray-300 font-medium hidden md:block">
             {username} {isOwner && <span className="text-green-400">(Owner)</span>}
