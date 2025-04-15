@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import LoginButton from './components/login';
-import Dashboard from './components/dashboard';
+import Dashboard from './components/dashyboard';
 import OwnerControls from './components/owner';
 import Stars from './components/star';
 import AuthCallback from './components/callback';
