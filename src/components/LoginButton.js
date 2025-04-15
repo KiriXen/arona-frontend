@@ -1,26 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React from 'react';
 
 function LoginButton() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        await axios.get('https://arona-backend.vercel.app/api/user', { withCredentials: true });
-        setIsAuthenticated(true);
-      } catch (error) {
-        setIsAuthenticated(false);
-      }
-    };
-    checkAuth();
-  }, []);
-
-  if (isAuthenticated) {
-    window.location.href = 'https://aron4.vercel.app/dashboard';
-    return null;
-  }
-
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="p-8 bg-gray-800 rounded-xl shadow-xl text-center backdrop-blur">

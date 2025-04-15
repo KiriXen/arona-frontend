@@ -8,7 +8,7 @@ function Dashboard({ userData }) {
   const dropdownRef = useRef(null);
 
   useEffect(() => {
-    axios.get('https://arona-backend.vercel.app/api/bot-stats', { withCredentials: true })
+    axios.get('https://arona-backend.vercel.app/api/bot-stats')
       .then(response => setBotStats(response.data))
       .catch(error => console.error('Error fetching bot stats:', error));
 
@@ -22,8 +22,8 @@ function Dashboard({ userData }) {
   }, []);
 
   const handleLogout = () => {
-    axios.get('https://arona-backend.vercel.app/auth/logout', { withCredentials: true })
-      .then(() => window.location.href = '/');
+    localStorage.removeItem('auth_token');
+    window.location.href = '/';
   };
 
   if (!userData) return null;

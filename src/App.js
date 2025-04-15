@@ -5,7 +5,22 @@ import LoginButton from './components/LoginButton';
 import Dashboard from './components/Dashboard';
 import OwnerControls from './components/OwnerControls';
 import Stars from './components/Stars';
+import AuthCallback from './components/AuthCallback'; // Add this component (will create below)
 import './styles.css';
+
+// Add axios default for Authorization header
+axios.interceptors.request.use(
+  config => {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  error => {
+    return Promise.reject(error);
+  }
+);
 
 function AuthCheck({ setIsAuthenticated, setUserData, isAuthenticated }) {
   const location = useLocation();
@@ -14,12 +29,21 @@ function AuthCheck({ setIsAuthenticated, setUserData, isAuthenticated }) {
     if (isAuthenticated) {
       return;
     }
+    
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      setIsAuthenticated(false);
+      setUserData(null);
+      return;
+    }
+    
     const checkAuth = async () => {
       try {
-        const response = await axios.get('https://arona-backend.vercel.app/api/user', { withCredentials: true });
+        const response = await axios.get('https://arona-backend.vercel.app/api/validate-token');
         setIsAuthenticated(true);
-        setUserData(response.data);
+        setUserData(response.data.user);
       } catch (error) {
+        localStorage.removeItem('auth_token');
         setIsAuthenticated(false);
         setUserData(null);
       }
@@ -45,12 +69,19 @@ function App() {
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      setIsAuthenticated(false);
+      return;
+    }
+
     const initialAuthCheck = async () => {
       try {
-        const response = await axios.get('https://arona-backend.vercel.app/api/user', { withCredentials: true });
+        const response = await axios.get('https://arona-backend.vercel.app/api/validate-token');
         setIsAuthenticated(true);
-        setUserData(response.data);
+        setUserData(response.data.user);
       } catch (error) {
+        localStorage.removeItem('auth_token');
         setIsAuthenticated(false);
         setUserData(null);
       }
@@ -58,12 +89,15 @@ function App() {
     initialAuthCheck();
   }, []);
 
-
   return (
     <Router>
       <div className="app">
         <Stars />
-        <AuthCheck setIsAuthenticated={setIsAuthenticated} setUserData={setUserData} isAuthenticated={isAuthenticated} />
+        <AuthCheck 
+          setIsAuthenticated={setIsAuthenticated} 
+          setUserData={setUserData} 
+          isAuthenticated={isAuthenticated} 
+        />
         
         <Routes>
           <Route 
@@ -77,6 +111,10 @@ function App() {
           <Route 
             path="/owner" 
             element={<OwnerRoute isAuthenticated={isAuthenticated} userData={userData} />}
+          />
+          <Route 
+            path="/auth-callback" 
+            element={<AuthCallback setIsAuthenticated={setIsAuthenticated} setUserData={setUserData} />} 
           />
         </Routes>
       </div>
