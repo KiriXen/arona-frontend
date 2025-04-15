@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Link } from 'react-router-dom'; // Import Link for navigation
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 function OwnerControls({ userData }) {
@@ -11,7 +11,7 @@ function OwnerControls({ userData }) {
   const dropdownRef = useRef(null);
 
   useEffect(() => {
-    axios.get('https://arona-backend.vercel.app/api/repositories', { withCredentials: true })
+    axios.get(`${process.env.REACT_APP_API_URL}/api/repositories`, { withCredentials: true })
       .then(response => setRepositories(response.data))
       .catch(error => console.error('Error fetching repositories:', error));
 
@@ -26,36 +26,42 @@ function OwnerControls({ userData }) {
 
   const handleAdd = async (e) => {
     e.preventDefault();
+    if (!link.match(/^https?:\/\/[^\s$.?#].[^\s]*$/)) {
+      alert('Please enter a valid URL');
+      return;
+    }
     try {
-      await axios.post('https://arona-backend.vercel.app/api/repositories', {
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/repositories`, {
         link,
         title,
         description
       }, { withCredentials: true });
-      const response = await axios.get('https://arona-backend.vercel.app/api/repositories', { withCredentials: true });
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/repositories`, { withCredentials: true });
       setRepositories(response.data);
       setLink('');
       setTitle('');
       setDescription('');
     } catch (error) {
       console.error('Error adding repository:', error);
+      alert('Failed to add repository');
     }
   };
 
   const handleDelete = async (repoTitle) => {
     try {
-      await axios.delete(`https://arona-backend.vercel.app/api/repositories/${encodeURIComponent(repoTitle)}`, {
+      await axios.delete(`${process.env.REACT_APP_API_URL}/api/repositories/${encodeURIComponent(repoTitle)}`, {
         withCredentials: true
       });
-      const response = await axios.get('https://arona-backend.vercel.app/api/repositories', { withCredentials: true });
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/repositories`, { withCredentials: true });
       setRepositories(response.data);
     } catch (error) {
       console.error('Error deleting repository:', error);
+      alert('Failed to delete repository');
     }
   };
 
   const handleLogout = () => {
-    axios.get('https://arona-backend.vercel.app/auth/logout', { withCredentials: true })
+    axios.get(`${process.env.REACT_APP_API_URL}/auth/logout`, { withCredentials: true })
       .then(() => window.location.href = '/');
   };
 
@@ -141,7 +147,6 @@ function OwnerControls({ userData }) {
 
         <div className="mt-10 p-6 bg-gray-800 rounded-xl shadow-lg backdrop-blur">
           <h2 className="text-2xl font-semibold text-white mb-6">Manage Repositories</h2>
-
           <form onSubmit={handleAdd} className="mb-8">
             <h3 className="text-xl font-medium text-white mb-3">Add Repository</h3>
             <input

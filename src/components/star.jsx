@@ -1,7 +1,6 @@
 import React from 'react';
 
 function Stars() {
-  // Generate random star properties
   const generateStars = (count, sizeRange) => {
     return Array.from({ length: count }, () => ({
       left: `${Math.random() * 100}vw`,
@@ -12,12 +11,9 @@ function Stars() {
     }));
   };
 
-  // Generate stars of different sizes
   const smallStars = generateStars(60, [5, 5]);
   const mediumStars = generateStars(50, [5, 5]);
   const largeStars = generateStars(20, [10, 10]);
-  
-  // Combine all stars
   const allStars = [...smallStars, ...mediumStars, ...largeStars];
 
   return (
@@ -51,7 +47,7 @@ function Stars() {
           }
         }
       `}</style>
-      
+
       {allStars.map((star, index) => (
         <div
           key={index}

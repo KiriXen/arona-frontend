@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import LoginButton from './components/LoginButton';
-import Dashboard from './components/Dashboard';
-import OwnerControls from './components/OwnerControls';
-import Stars from './components/Stars';
-import AuthCallback from './components/AuthCallback'; // Add this component (will create below)
+import LoginButton from './components/login';
+import Dashboard from './components/dashboard';
+import OwnerControls from './components/owner';
+import Stars from './components/star';
+import AuthCallback from './components/callback';
 import './styles.css';
 
-// Add axios default for Authorization header
 axios.interceptors.request.use(
   config => {
     const token = localStorage.getItem('auth_token');
@@ -17,9 +16,7 @@ axios.interceptors.request.use(
     }
     return config;
   },
-  error => {
-    return Promise.reject(error);
-  }
+  error => Promise.reject(error)
 );
 
 function AuthCheck({ setIsAuthenticated, setUserData, isAuthenticated }) {
@@ -29,17 +26,17 @@ function AuthCheck({ setIsAuthenticated, setUserData, isAuthenticated }) {
     if (isAuthenticated) {
       return;
     }
-    
+
     const token = localStorage.getItem('auth_token');
     if (!token) {
       setIsAuthenticated(false);
       setUserData(null);
       return;
     }
-    
+
     const checkAuth = async () => {
       try {
-        const response = await axios.get('https://arona-backend.vercel.app/api/validate-token');
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/validate-token`);
         setIsAuthenticated(true);
         setUserData(response.data.user);
       } catch (error) {
@@ -77,7 +74,7 @@ function App() {
 
     const initialAuthCheck = async () => {
       try {
-        const response = await axios.get('https://arona-backend.vercel.app/api/validate-token');
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/validate-token`);
         setIsAuthenticated(true);
         setUserData(response.data.user);
       } catch (error) {
@@ -98,7 +95,6 @@ function App() {
           setUserData={setUserData} 
           isAuthenticated={isAuthenticated} 
         />
-        
         <Routes>
           <Route 
             path="/" 

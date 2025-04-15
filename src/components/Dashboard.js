@@ -8,7 +8,7 @@ function Dashboard({ userData }) {
   const dropdownRef = useRef(null);
 
   useEffect(() => {
-    axios.get('https://arona-backend.vercel.app/api/bot-stats')
+    axios.get(`${process.env.REACT_APP_API_URL}/api/bot-stats`)
       .then(response => setBotStats(response.data))
       .catch(error => console.error('Error fetching bot stats:', error));
 

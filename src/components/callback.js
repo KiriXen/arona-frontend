@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode'; // Changed to named import
+import { jwtDecode } from 'jwt-decode';
 
 function AuthCallback({ setIsAuthenticated, setUserData }) {
   const navigate = useNavigate();
@@ -17,17 +17,11 @@ function AuthCallback({ setIsAuthenticated, setUserData }) {
     }
 
     try {
-      // Decode token to get user data
       const userData = jwtDecode(token);
-      
-      // Store token in localStorage
       localStorage.setItem('auth_token', token);
-      
-      // Update authentication state
       setIsAuthenticated(true);
       setUserData(userData);
-      
-      // Redirect to dashboard or owner page
+
       if (userData.isOwner) {
         navigate('/owner');
       } else {

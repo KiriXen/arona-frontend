@@ -7,7 +7,7 @@ function LoginButton() {
         <h1 className="text-3xl font-bold text-white mb-6">Discord Bot Dashboard</h1>
         <p className="text-gray-300 mb-8">Manage your bot repositories with ease</p>
         <a
-          href="https://arona-backend.vercel.app/auth/discord"
+          href={`${process.env.REACT_APP_API_URL}/auth/discord`}
           className="px-8 py-4 bg-indigo-600 text-white font-semibold rounded-full shadow-lg hover:bg-indigo-700 transition duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
         >
           <svg 

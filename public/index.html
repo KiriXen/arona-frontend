@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://arona-backend.vercel.app; img-src 'self' https://cdn.discordapp.com;">
     <title>Discord Bot Dashboard</title>
     <style>
       html {
@@ -10,7 +11,7 @@
         background: #0f172a;
         overflow-x: hidden;
       }
-      
+
       body {
         min-height: 100%;
         margin: 0;
@@ -23,7 +24,7 @@
         background: #0f172a;
         overscroll-behavior: none;
       }
-      
+
       body::before {
         content: "";
         position: fixed;
@@ -34,31 +35,31 @@
         background: linear-gradient(135deg, #0f172a, #1e293b);
         z-index: -2;
       }
-      
+
       #root {
         min-height: 100vh;
         position: relative;
         z-index: 1;
       }
-      
+
       [draggable="false"] {
         -webkit-user-drag: none;
         user-drag: none;
       }
-      
+
       ::-webkit-scrollbar {
         width: 10px;
       }
-      
+
       ::-webkit-scrollbar-track {
         background: rgba(15, 23, 42, 0.5);
       }
-      
+
       ::-webkit-scrollbar-thumb {
         background: rgba(59, 130, 246, 0.5);
         border-radius: 5px;
       }
-      
+
       ::-webkit-scrollbar-thumb:hover {
         background: rgba(59, 130, 246, 0.7);
       }
