@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import jwt_decode from 'jwt-decode'; // You'll need to install this: npm install jwt-decode
+import { jwtDecode } from 'jwt-decode'; // Changed to named import
 
 function AuthCallback({ setIsAuthenticated, setUserData }) {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ function AuthCallback({ setIsAuthenticated, setUserData }) {
 
     try {
       // Decode token to get user data
-      const userData = jwt_decode(token);
+      const userData = jwtDecode(token);
       
       // Store token in localStorage
       localStorage.setItem('auth_token', token);
