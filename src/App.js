@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import LoginButton from './components/login';
-import Dashboard from './components/dashyboard';
-import OwnerControls from './components/owner';
+import LoginButton from './pages/login';
+import Dashboard from './pages/dashyboard';
+import OwnerControls from './pages/owner';
 import Stars from './components/star';
 import AuthCallback from './components/callback';
 import './styles.css';

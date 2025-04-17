@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
 import axios from 'axios';
+import Header from '../components/header';
 
 function OwnerControls({ userData }) {
   const [repositories, setRepositories] = useState([]);
@@ -10,10 +10,7 @@ function OwnerControls({ userData }) {
   const [link, setLink] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
   const modalRef = useRef(null);
-
   const repositoriesPerPage = 6;
 
   useEffect(() => {
@@ -23,9 +20,6 @@ function OwnerControls({ userData }) {
       .catch((error) => console.error('Error fetching repositories:', error));
 
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownOpen(false);
-      }
       if (isModalOpen && modalRef.current && !modalRef.current.contains(event.target)) {
         closeModal();
       }
@@ -72,10 +66,9 @@ function OwnerControls({ userData }) {
 
   const handleDelete = async (repoTitle) => {
     try {
-      const token = localStorage.getItem('token') || '';
-      
+      const token = localStorage.getItem('auth_token') || '';
       await axios.delete(
-        `${process.env.REACT_APP_API_URL}/api/repositories/${encodeURIComponent(repoTitle)}`, 
+        `${process.env.REACT_APP_API_URL}/api/repositories/${encodeURIComponent(repoTitle)}`,
         {
           withCredentials: true,
           headers: {
@@ -83,9 +76,8 @@ function OwnerControls({ userData }) {
           }
         }
       );
-      
       const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/api/repositories`, 
+        `${process.env.REACT_APP_API_URL}/api/repositories`,
         {
           withCredentials: true,
           headers: {
@@ -93,7 +85,6 @@ function OwnerControls({ userData }) {
           }
         }
       );
-      
       setRepositories(response.data);
     } catch (error) {
       console.error('Error deleting code:', error);
@@ -102,14 +93,11 @@ function OwnerControls({ userData }) {
   };
 
   const handleLogout = () => {
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/auth/logout`, { withCredentials: true })
-      .then(() => (window.location.href = '/'));
+    localStorage.removeItem('auth_token');
+    window.location.href = '/';
   };
 
   if (!userData || !userData.isOwner) return null;
-
-  const { username, isOwner, avatar } = userData;
 
   const indexOfLastRepo = currentPage * repositoriesPerPage;
   const indexOfFirstRepo = indexOfLastRepo - repositoriesPerPage;
@@ -159,96 +147,33 @@ function OwnerControls({ userData }) {
 
   return (
     <div className="min-h-screen p-6">
-      <header className="flex items-center justify-between max-w-5xl mx-auto mb-8 p-4 bg-gray-800 rounded-xl shadow-lg backdrop-blur">
-        <h1 className="text-3xl font-bold text-white">Owner</h1>
-        <div className="flex items-center space-x-4 relative" ref={dropdownRef}>
-          <span className="text-gray-300 font-medium hidden md:block">
-            {username} {isOwner && <span className="text-green-400">(Owner)</span>}
-          </span>
-          <div className="relative">
-            <img
-              src={avatar || 'https://cdn.discordapp.com/embed/avatars/0.png'}
-              alt="Profile"
-              className="w-12 h-12 rounded-full border-2 border-gray-600 cursor-pointer hover:border-blue-500 transition-all duration-200"
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-            />
-            {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg py-1 z-10 animate-fadeIn">
-                <div className="px-4 py-2 border-b border-gray-700">
-                  <p className="text-sm text-gray-300 truncate">{username}</p>
-                  {isOwner && <p className="text-xs text-green-400">Owner</p>}
-                </div>
-                <Link
-                  to="/dashboard"
-                  className="w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-700 flex items-center space-x-2"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                    />
-                  </svg>
-                  <span>Dashboard</span>
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-700 flex items-center space-x-2"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                    />
-                  </svg>
-                  <span>Logout</span>
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
-
-      <div className="max-w-5xl mx-auto">
-        <h2 className="text-2xl font-semibold text-white mb-4">Source Codes</h2>
-        <div className="grid gap-6 md:grid-cols-2">
+      <Header title="Owner" userData={userData} handleLogout={handleLogout} />
+      <div className="max-w-6xl mx-auto">
+        <h2 className="text-2xl font-semibold text-white mb-6 animate-slide-in">Source Codes</h2>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {currentRepositories.length === 0 ? (
-            <p className="text-gray-400 text-center col-span-full py-8">No Codes available yet.</p>
+            <p className="text-gray-400 text-center col-span-full py-12 animate-fade-in">No Codes available yet.</p>
           ) : (
-            currentRepositories.map((repo) => (
+            currentRepositories.map((repo, index) => (
               <div
                 key={repo.title}
-                className="p-6 bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition duration-200 border border-gray-700 hover:border-blue-500"
+                className="p-6 bg-gray-800/90 rounded-xl shadow-md border border-gray-700 hover:border-indigo-500 card-hover animate-fade-in"
+                style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <h3 className="text-xl font-medium text-white">{repo.title}</h3>
-                <p className="text-gray-300 mt-1">{repo.description || 'No description'}</p>
-                <div className="mt-3 flex space-x-4">
+                <h3 className="text-xl font-medium text-white mb-2">{repo.title}</h3>
+                <p className="text-gray-300 mt-1 line-clamp-2">{repo.description || 'No description'}</p>
+                <div className="mt-4 flex space-x-4">
                   <a
                     href={repo.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-400 hover:text-blue-300 hover:underline"
+                    className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors duration-200"
                   >
                     View Code
                   </a>
                   <button
                     onClick={() => handleDelete(repo.title)}
-                    className="text-red-400 hover:text-red-300 hover:underline focus:outline-none"
+                    className="text-red-400 hover:text-red-300 font-medium transition-colors duration-200"
                   >
                     Delete
                   </button>
@@ -259,7 +184,7 @@ function OwnerControls({ userData }) {
         </div>
 
         {totalPages > 1 && (
-          <div className="flex justify-center mt-8">
+          <div className="flex justify-center mt-8 animate-fade-in">
             <nav className="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
               <button
                 onClick={() => paginate(currentPage - 1)}
@@ -286,7 +211,7 @@ function OwnerControls({ userData }) {
                     onClick={() => paginate(number)}
                     className={`relative inline-flex items-center px-4 py-2 border border-gray-600 text-sm font-medium ${
                       currentPage === number
-                        ? 'z-10 bg-blue-600 border-blue-500 text-white'
+                        ? 'z-10 bg-indigo-600 border-indigo-500 text-white'
                         : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                     } transition-colors duration-200`}
                   >
@@ -310,7 +235,7 @@ function OwnerControls({ userData }) {
         )}
         
         {repositories.length > 0 && (
-          <div className="text-center mt-2 text-sm text-gray-400">
+          <div className="text-center mt-2 text-sm text-gray-400 animate-fade-in">
             Showing {indexOfFirstRepo + 1}-{Math.min(indexOfLastRepo, repositories.length)} of {repositories.length} source code
           </div>
         )}
@@ -318,10 +243,9 @@ function OwnerControls({ userData }) {
 
       <button
         onClick={openModal}
-        className="fixed bottom-4 right-4 w-14 h-14 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 transition duration-300 flex items-center justify-center z-40 transform hover:scale-110"
+        className="fixed bottom-6 right-6 w-14 h-14 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 transition duration-300 flex items-center justify-center z-40 transform hover:scale-110 animate-fade-in"
       >
         <svg
-          xmlns="http://www.w3.org/2000/svg"
           className="h-6 w-6"
           fill="none"
           viewBox="0 0 24 24"
@@ -339,17 +263,17 @@ function OwnerControls({ userData }) {
         >
           <div 
             ref={modalRef}
-            className={`bg-gray-800 p-6 rounded-xl shadow-lg w-full max-w-md transition-all duration-300 transform ${
+            className={`bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-md transition-all duration-300 transform ${
               isModalVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
-            }`}
+            } animate-fade-in`}
           >
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-semibold text-white">Add Code</h2>
               <button 
                 onClick={closeModal}
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-gray-400 hover:text-white transition-colors duration-200"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
@@ -363,7 +287,7 @@ function OwnerControls({ userData }) {
                   value={link}
                   onChange={(e) => setLink(e.target.value)}
                   placeholder="https://github.com/username/repo"
-                  className="w-full p-3 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-3 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200"
                   required
                 />
               </div>
@@ -375,7 +299,7 @@ function OwnerControls({ userData }) {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Source Title"
-                  className="w-full p-3 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-3 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200"
                   required
                 />
               </div>
@@ -386,7 +310,7 @@ function OwnerControls({ userData }) {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="A short description of the source"
-                  className="w-full p-3 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-24"
+                  className="w-full p-3 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 min-h-24 transition-colors duration-200"
                 />
               </div>
               <div className="flex justify-end space-x-4 pt-2">
@@ -399,7 +323,7 @@ function OwnerControls({ userData }) {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200"
                 >
                   Add Code
                 </button>
