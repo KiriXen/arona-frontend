@@ -258,7 +258,6 @@ function OwnerControls({ userData }) {
           )}
         </div>
 
-        {/* Enhanced Pagination */}
         {totalPages > 1 && (
           <div className="flex justify-center mt-8">
             <nav className="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
@@ -310,7 +309,6 @@ function OwnerControls({ userData }) {
           </div>
         )}
         
-        {/* Showing entries info */}
         {repositories.length > 0 && (
           <div className="text-center mt-2 text-sm text-gray-400">
             Showing {indexOfFirstRepo + 1}-{Math.min(indexOfLastRepo, repositories.length)} of {repositories.length} repositories
@@ -318,7 +316,6 @@ function OwnerControls({ userData }) {
         )}
       </div>
 
-      {/* Fixed Add Button */}
       <button
         onClick={openModal}
         className="fixed bottom-4 right-4 w-14 h-14 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 transition duration-300 flex items-center justify-center z-40 transform hover:scale-110"
@@ -334,7 +331,6 @@ function OwnerControls({ userData }) {
         </svg>
       </button>
 
-      {/* Modal for Add Repository with Fade In/Out Animation */}
       {isModalOpen && (
         <div 
           className={`fixed inset-0 bg-black transition-opacity duration-300 flex items-center justify-center z-50 ${
