@@ -65,8 +65,8 @@ function OwnerControls({ userData }) {
       setDescription('');
       closeModal();
     } catch (error) {
-      console.error('Error adding repository:', error);
-      alert('Failed to add repository');
+      console.error('Error adding code:', error);
+      alert('Failed to add code');
     }
   };
 
@@ -96,8 +96,8 @@ function OwnerControls({ userData }) {
       
       setRepositories(response.data);
     } catch (error) {
-      console.error('Error deleting repository:', error);
-      alert('Failed to delete repository');
+      console.error('Error deleting code:', error);
+      alert('Failed to delete code');
     }
   };
 
@@ -225,10 +225,10 @@ function OwnerControls({ userData }) {
       </header>
 
       <div className="max-w-5xl mx-auto">
-        <h2 className="text-2xl font-semibold text-white mb-4">Repositories</h2>
+        <h2 className="text-2xl font-semibold text-white mb-4">Source Codes</h2>
         <div className="grid gap-6 md:grid-cols-2">
           {currentRepositories.length === 0 ? (
-            <p className="text-gray-400 text-center col-span-full py-8">No repositories available yet.</p>
+            <p className="text-gray-400 text-center col-span-full py-8">No Codes available yet.</p>
           ) : (
             currentRepositories.map((repo) => (
               <div
@@ -244,7 +244,7 @@ function OwnerControls({ userData }) {
                     rel="noopener noreferrer"
                     className="text-blue-400 hover:text-blue-300 hover:underline"
                   >
-                    View Repository
+                    View Code
                   </a>
                   <button
                     onClick={() => handleDelete(repo.title)}
@@ -311,7 +311,7 @@ function OwnerControls({ userData }) {
         
         {repositories.length > 0 && (
           <div className="text-center mt-2 text-sm text-gray-400">
-            Showing {indexOfFirstRepo + 1}-{Math.min(indexOfLastRepo, repositories.length)} of {repositories.length} repositories
+            Showing {indexOfFirstRepo + 1}-{Math.min(indexOfLastRepo, repositories.length)} of {repositories.length} source code
           </div>
         )}
       </div>
@@ -344,7 +344,7 @@ function OwnerControls({ userData }) {
             }`}
           >
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-semibold text-white">Add Repository</h2>
+              <h2 className="text-2xl font-semibold text-white">Add Code</h2>
               <button 
                 onClick={closeModal}
                 className="text-gray-400 hover:text-white transition-colors"
@@ -356,7 +356,7 @@ function OwnerControls({ userData }) {
             </div>
             <form onSubmit={handleAdd} className="space-y-4">
               <div>
-                <label htmlFor="link" className="block text-sm font-medium text-gray-300 mb-1">Repository Link</label>
+                <label htmlFor="link" className="block text-sm font-medium text-gray-300 mb-1">Source Link</label>
                 <input
                   id="link"
                   type="text"
@@ -374,7 +374,7 @@ function OwnerControls({ userData }) {
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Repository Title"
+                  placeholder="Source Title"
                   className="w-full p-3 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 />
@@ -385,7 +385,7 @@ function OwnerControls({ userData }) {
                   id="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="A short description of this repository"
+                  placeholder="A short description of the source"
                   className="w-full p-3 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-24"
                 />
               </div>
@@ -401,7 +401,7 @@ function OwnerControls({ userData }) {
                   type="submit"
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
                 >
-                  Add Repository
+                  Add Code
                 </button>
               </div>
             </form>
