@@ -10,14 +10,37 @@ function OwnerControls({ userData }) {
   const [link, setLink] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const modalRef = useRef(null);
   const repositoriesPerPage = 6;
 
+  const fetchRepositories = async () => {
+    try {
+      setLoading(true);
+      setError(false);
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/api/repositories`, 
+        { withCredentials: true }
+      );
+      setRepositories(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching repositories:', error);
+      setError(true);
+      setLoading(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchRepositories();
+    setTimeout(() => setRefreshing(false), 600);
+  };
+
   useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/api/repositories`, { withCredentials: true })
-      .then((response) => setRepositories(response.data))
-      .catch((error) => console.error('Error fetching repositories:', error));
+    fetchRepositories();
 
     const handleClickOutside = (event) => {
       if (isModalOpen && modalRef.current && !modalRef.current.contains(event.target)) {
@@ -106,7 +129,7 @@ function OwnerControls({ userData }) {
 
   const getPageNumbers = () => {
     const pageNumbers = [];
-    const totalPageNumbers = 5;
+    const totalPageNumbers = window.innerWidth < 640 ? 3 : 5;
     
     if (totalPages <= totalPageNumbers) {
       for (let i = 1; i <= totalPages; i++) {
@@ -145,54 +168,131 @@ function OwnerControls({ userData }) {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <div className="text-gray-400 text-center col-span-full py-12 animate-fade-in">
+          <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto animate-spin mb-4"></div>
+          <p>Loading source codes...</p>
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="text-gray-400 text-center col-span-full py-12 animate-fade-in">
+          <p className="mb-4">Failed to load source codes.</p>
+          <button 
+            onClick={handleRefresh}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200 inline-flex items-center space-x-2"
+            disabled={refreshing}
+          >
+            <svg 
+              className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} 
+              xmlns="http://www.w3.org/2000/svg" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span>{refreshing ? 'Retrying...' : 'Retry'}</span>
+          </button>
+        </div>
+      );
+    }
+
+    if (currentRepositories.length === 0) {
+      return (
+        <div className="text-gray-400 text-center col-span-full py-12 animate-fade-in">
+          <p className="mb-4">No Codes available yet.</p>
+          <button 
+            onClick={handleRefresh}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200 inline-flex items-center space-x-2"
+            disabled={refreshing}
+          >
+            <svg 
+              className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} 
+              xmlns="http://www.w3.org/2000/svg" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span>{refreshing ? 'Refreshing...' : 'Refresh'}</span>
+          </button>
+        </div>
+      );
+    }
+
+    return currentRepositories.map((repo, index) => (
+      <div
+        key={repo.title}
+        className="p-4 sm:p-6 bg-gray-800/90 rounded-xl shadow-md border border-gray-700 hover:border-indigo-500 card-hover animate-fade-in"
+        style={{ animationDelay: `${index * 0.1}s` }}
+      >
+        <h3 className="text-lg sm:text-xl font-medium text-white mb-2">{repo.title}</h3>
+        <p className="text-gray-300 mt-1 line-clamp-2 text-sm sm:text-base">{repo.description || 'No description'}</p>
+        <div className="mt-4 flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
+          <a
+            href={repo.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors duration-200 text-center sm:text-left"
+          >
+            View Code
+          </a>
+          <button
+            onClick={() => handleDelete(repo.title)}
+            className="text-red-400 hover:text-red-300 font-medium transition-colors duration-200 text-center sm:text-left"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    ));
+  };
+
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen p-4 sm:p-6">
       <Header title="Owner" userData={userData} handleLogout={handleLogout} />
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-2xl font-semibold text-white mb-6 animate-slide-in">Source Codes</h2>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {currentRepositories.length === 0 ? (
-            <p className="text-gray-400 text-center col-span-full py-12 animate-fade-in">No Codes available yet.</p>
-          ) : (
-            currentRepositories.map((repo, index) => (
-              <div
-                key={repo.title}
-                className="p-6 bg-gray-800/90 rounded-xl shadow-md border border-gray-700 hover:border-indigo-500 card-hover animate-fade-in"
-                style={{ animationDelay: `${index * 0.1}s` }}
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
+          <h2 className="text-xl sm:text-2xl font-semibold text-white animate-slide-in">Source Codes</h2>
+          {!loading && repositories.length > 0 && (
+            <button 
+              onClick={handleRefresh}
+              className="p-2 text-gray-300 hover:text-white rounded-full hover:bg-gray-700 transition-colors duration-200"
+              disabled={refreshing}
+              aria-label="Refresh source codes"
+            >
+              <svg 
+                className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} 
+                xmlns="http://www.w3.org/2000/svg" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
               >
-                <h3 className="text-xl font-medium text-white mb-2">{repo.title}</h3>
-                <p className="text-gray-300 mt-1 line-clamp-2">{repo.description || 'No description'}</p>
-                <div className="mt-4 flex space-x-4">
-                  <a
-                    href={repo.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors duration-200"
-                  >
-                    View Code
-                  </a>
-                  <button
-                    onClick={() => handleDelete(repo.title)}
-                    className="text-red-400 hover:text-red-300 font-medium transition-colors duration-200"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            </button>
           )}
         </div>
+        <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {renderContent()}
+        </div>
 
-        {totalPages > 1 && (
-          <div className="flex justify-center mt-8 animate-fade-in">
+        {!loading && !error && totalPages > 1 && (
+          <div className="flex justify-center mt-6 sm:mt-8 animate-fade-in overflow-x-auto py-2">
             <nav className="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
               <button
                 onClick={() => paginate(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="relative inline-flex items-center px-3 py-2 rounded-l-md border border-gray-600 bg-gray-700 text-sm font-medium text-gray-300 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                className="relative inline-flex items-center px-2 sm:px-3 py-2 rounded-l-md border border-gray-600 bg-gray-700 text-sm font-medium text-gray-300 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
               >
                 <span className="sr-only">Previous</span>
-                <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <svg className="h-4 w-4 sm:h-5 sm:w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
               </button>
@@ -201,7 +301,7 @@ function OwnerControls({ userData }) {
                 number === '...' ? (
                   <span
                     key={`ellipsis-${index}`}
-                    className="relative inline-flex items-center px-4 py-2 border border-gray-600 bg-gray-700 text-sm font-medium text-gray-300"
+                    className="relative inline-flex items-center px-3 py-2 border border-gray-600 bg-gray-700 text-sm font-medium text-gray-300"
                   >
                     ...
                   </span>
@@ -209,7 +309,7 @@ function OwnerControls({ userData }) {
                   <button
                     key={number}
                     onClick={() => paginate(number)}
-                    className={`relative inline-flex items-center px-4 py-2 border border-gray-600 text-sm font-medium ${
+                    className={`relative inline-flex items-center px-3 sm:px-4 py-2 border border-gray-600 text-xs sm:text-sm font-medium ${
                       currentPage === number
                         ? 'z-10 bg-indigo-600 border-indigo-500 text-white'
                         : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
@@ -223,10 +323,10 @@ function OwnerControls({ userData }) {
               <button
                 onClick={() => paginate(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="relative inline-flex items-center px-3 py-2 rounded-r-md border border-gray-600 bg-gray-700 text-sm font-medium text-gray-300 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                className="relative inline-flex items-center px-2 sm:px-3 py-2 rounded-r-md border border-gray-600 bg-gray-700 text-sm font-medium text-gray-300 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
               >
                 <span className="sr-only">Next</span>
-                <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <svg className="h-4 w-4 sm:h-5 sm:w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
                 </svg>
               </button>
@@ -234,8 +334,8 @@ function OwnerControls({ userData }) {
           </div>
         )}
         
-        {repositories.length > 0 && (
-          <div className="text-center mt-2 text-sm text-gray-400 animate-fade-in">
+        {!loading && !error && repositories.length > 0 && (
+          <div className="text-center mt-2 text-xs sm:text-sm text-gray-400 animate-fade-in">
             Showing {indexOfFirstRepo + 1}-{Math.min(indexOfLastRepo, repositories.length)} of {repositories.length} source code
           </div>
         )}
@@ -243,10 +343,11 @@ function OwnerControls({ userData }) {
 
       <button
         onClick={openModal}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 transition duration-300 flex items-center justify-center z-40 transform hover:scale-110 animate-fade-in"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-12 h-12 sm:w-14 sm:h-14 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 transition duration-300 flex items-center justify-center z-40 transform hover:scale-110 animate-fade-in"
+        aria-label="Add new code"
       >
         <svg
-          className="h-6 w-6"
+          className="h-5 w-5 sm:h-6 sm:w-6"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -257,23 +358,24 @@ function OwnerControls({ userData }) {
 
       {isModalOpen && (
         <div 
-          className={`fixed inset-0 bg-black transition-opacity duration-300 flex items-center justify-center z-50 ${
+          className={`fixed inset-0 bg-black transition-opacity duration-300 flex items-center justify-center z-50 p-4 ${
             isModalVisible ? 'bg-opacity-50' : 'bg-opacity-0'
           }`}
         >
           <div 
             ref={modalRef}
-            className={`bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-md transition-all duration-300 transform ${
+            className={`bg-gray-800 p-4 sm:p-6 rounded-xl shadow-xl w-full max-w-md transition-all duration-300 transform ${
               isModalVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
             } animate-fade-in`}
           >
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-semibold text-white">Add Code</h2>
+            <div className="flex justify-between items-center mb-4 sm:mb-6">
+              <h2 className="text-xl sm:text-2xl font-semibold text-white">Add Code</h2>
               <button 
                 onClick={closeModal}
                 className="text-gray-400 hover:text-white transition-colors duration-200"
+                aria-label="Close modal"
               >
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
@@ -287,7 +389,7 @@ function OwnerControls({ userData }) {
                   value={link}
                   onChange={(e) => setLink(e.target.value)}
                   placeholder="https://github.com/username/repo"
-                  className="w-full p-3 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200"
+                  className="w-full p-2 sm:p-3 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200 text-sm sm:text-base"
                   required
                 />
               </div>
@@ -299,7 +401,7 @@ function OwnerControls({ userData }) {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Source Title"
-                  className="w-full p-3 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200"
+                  className="w-full p-2 sm:p-3 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200 text-sm sm:text-base"
                   required
                 />
               </div>
@@ -310,20 +412,20 @@ function OwnerControls({ userData }) {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="A short description of the source"
-                  className="w-full p-3 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 min-h-24 transition-colors duration-200"
+                  className="w-full p-2 sm:p-3 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 min-h-20 sm:min-h-24 transition-colors duration-200 text-sm sm:text-base"
                 />
               </div>
-              <div className="flex justify-end space-x-4 pt-2">
+              <div className="flex justify-end space-x-3 sm:space-x-4 pt-2">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-500 transition-colors duration-200"
+                  className="px-3 py-2 sm:px-4 sm:py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-500 transition-colors duration-200 text-sm sm:text-base"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200"
+                  className="px-3 py-2 sm:px-4 sm:py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200 text-sm sm:text-base"
                 >
                   Add Code
                 </button>

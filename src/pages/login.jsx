@@ -2,23 +2,23 @@ import React from 'react';
 
 function LoginButton() {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 to-indigo-900">
-      <div className="w-full max-w-md p-8 bg-gray-800/80 rounded-2xl shadow-2xl text-center backdrop-blur-lg border border-gray-700/50 transform transition-all duration-500 hover:shadow-indigo-500/30">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-4">Arona Dashboard</h1>
-          <p className="text-gray-300 text-lg">Manage Arona with ease</p>
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 to-indigo-900 p-4">
+      <div className="w-full max-w-sm sm:max-w-md p-6 sm:p-8 bg-gray-800/80 rounded-xl sm:rounded-2xl shadow-xl sm:shadow-2xl text-center backdrop-blur-lg border border-gray-700/50 transform transition-all duration-500 hover:shadow-indigo-500/30">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2 sm:mb-4">Arona Dashboard</h1>
+          <p className="text-gray-300 text-base sm:text-lg">Manage Arona with ease</p>
         </div>
         
-        <div className="relative mb-8 h-px bg-gradient-to-r from-transparent via-gray-500 to-transparent"></div>
+        <div className="relative mb-6 sm:mb-8 h-px bg-gradient-to-r from-transparent via-gray-500 to-transparent"></div>
         
         <div className="mb-6">
-          <p className="text-gray-400 mb-4">Connect your Discord account to get started</p>
+          <p className="text-gray-400 mb-4 text-sm sm:text-base">Connect your Discord account to get started</p>
           <a
             href={`${process.env.REACT_APP_API_URL}/auth/discord`}
-            className="w-full px-6 py-4 bg-indigo-600 text-white font-semibold rounded-xl shadow-lg hover:bg-indigo-700 transition duration-300 flex items-center justify-center space-x-3 group"
+            className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-indigo-600 text-white font-semibold rounded-lg sm:rounded-xl shadow-lg hover:bg-indigo-700 transition duration-300 flex items-center justify-center space-x-2 sm:space-x-3 group text-sm sm:text-base"
           >
             <svg 
-              className="w-6 h-6 group-hover:animate-pulse" 
+              className="w-5 h-5 sm:w-6 sm:h-6 group-hover:animate-pulse" 
               xmlns="http://www.w3.org/2000/svg" 
               viewBox="0 0 127.14 96.36"
               fill="currentColor"
@@ -29,7 +29,7 @@ function LoginButton() {
           </a>
         </div>
         
-        <div className="text-gray-500 text-sm">
+        <div className="text-gray-500 text-xs sm:text-sm">
           <p>By logging in, you agree to our Terms of Service</p>
         </div>
       </div>
